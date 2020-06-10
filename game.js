@@ -10,22 +10,35 @@ function Snake()
 	this.size=18;
 	this.length=1;
 	this.direction='Right';
-	this.speed=200;
+	this.speed=100;
 	this.snake_can_move_through_walls= true;
+	this.body=[];
 
-// draws one block of the snake-body on the canvas, everytime it is called
+// draws the snake on the canvas, everytime it is called
 	this.draw=function()
 	{
-		ctx.fillStyle=this.innercolor;
+		ctx.fillStyle=snake.innercolor;
 		ctx.fillRect(this.snakeX,this.snakeY,this.size,this.size);
 		ctx.strokeStyle=this.strokecolor;
 		ctx.lineWidth=this.strokewidth;
 		ctx.strokeRect(this.snakeX,this.snakeY,this.size,this.size);
+
+		for(let i=this.body.length-1;i>=0;i--)
+		{
+			ctx.fillStyle=this.innercolor;
+			ctx.fillRect(this.body[i].snakeX,this.body[i].snakeY,this.size,this.size);
+			ctx.strokeStyle=this.strokecolor;
+			ctx.lineWidth=this.strokewidth;
+			ctx.strokeRect(this.body[i].snakeX,this.body[i].snakeY,this.size,this.size);
+		}
 	};
 
 // updates the position of the snake when the user hasn't given a command
-	this.update_move=function()
+	this.update_move=function(add_block)
 	{
+		this.body.push({snakeX:this.snakeX, snakeY:this.snakeY, direction:this.direction});
+		if(!add_block)
+			this.body.shift();
 		switch(this.direction)
 		{
 			case 'Left':
@@ -65,15 +78,19 @@ function Snake()
 		switch (key)
 		{
 			case 'Left':
+			if(this.direction!='Right'||this.body.length==0)
 			this.direction=key;
 			break;
 			case 'Up':
+			if(this.direction!='Down'||this.body.length==0)
 			this.direction=key;
 			break;
 			case 'Right':
+			if(this.direction!='Left'||this.body.length==0)
 			this.direction=key;
 			break;
 			case 'Down':
+			if(this.direction!='Up'||this.body.length==0)
 			this.direction=key;
 			break;
 			default:
@@ -81,6 +98,7 @@ function Snake()
 		}
 	};
 }
+
 
 function Fruit()
 {
@@ -104,7 +122,6 @@ function Fruit()
 // returns true if the snake eats the fruit
 	this.eaten=function()
 	{
-		console.log(snake.snakeX, snake.snakeY, this.fruitX, this.fruitY);
 		if(snake.snakeX==this.fruitX && snake.snakeY==this.fruitY)
 		{
 			return true;
@@ -128,16 +145,27 @@ function init()
 	score.innerHTML='SCORE	&emsp;'+score_num;
 
 	fruit.picklocation();
-
-	window.setInterval(function(){
+	let add_block=false;
+	var frame_update=window.setInterval(function(){
 		ctx.clearRect(0,0,gameBoard.width,gameBoard.height);
-		snake.update_move();
+		snake.update_move(add_block);
+		add_block=false;
 		fruit.appear();
 		if(fruit.eaten()==true)
 		{
 			score_num++;
+			add_block=true;
 			score.innerHTML='SCORE &emsp;'+score_num;
+			console.log(snake);
 			fruit.picklocation();
+		}
+		for(let i=0;i<snake.body.length;i++)
+		{
+			if(snake.snakeX==snake.body[i].snakeX&&snake.snakeY==snake.body[i].snakeY)
+			{
+				console.log('CRASHED');
+				clearInterval(frame_update);
+			}
 		}
 		snake.draw();
 	},snake.speed);
