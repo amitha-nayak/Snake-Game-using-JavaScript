@@ -4,13 +4,13 @@ function Snake()
 {
 	this.snakeX=0;
 	this.snakeY=0;
-	this.innercolor="red";
-	this.strokecolor="white";
-	this.strokewidth=2;
+	this.innercolor="red"; //customise the snake
+	this.strokecolor="white"; //customise the snake
+	this.strokewidth=2; //customise the snake
 	this.size=18;
 	this.length=1;
 	this.direction='Right';
-	this.speed=100;
+	this.speed=100; //decrease the value if you want more speed
 	this.snake_can_move_through_walls= true;
 	this.body=[];
 
@@ -141,7 +141,7 @@ function init()
 	snake=new Snake();
 	fruit=new Fruit();
 	fruit_img=new Image();
-	fruit_img.src="apple.png";
+	fruit_img.src="apple.png"; //can change the image used for 'apple' here
 	score.innerHTML='SCORE	&emsp;'+score_num;
 
 	fruit.picklocation();
